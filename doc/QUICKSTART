@@ -1,0 +1,653 @@
+The complete ROBOSPECT manual has not been written at this time.  This
+quick summary of command line options and ROBOSPECT modules will serve
+as the main source of documentation until the full manual is complete.
+
+
+INSTALLATION
+
+The following libraries are used by ROBOSPECT:
+
+  * libgsl : required. Tested to work with versions > v1.9.
+  * libcfitsio : optional requirement to allow FITS image input.
+  * libplplotd : optional requirement to produce line fit plots.
+
+Compilation is done by simply running:
+./configure && make
+
+This produces a binary file src/robospect which can then be installed
+into the user's path.
+
+*** Compilation problems ***
+
+The two most common issues that prevent compilation are missing
+libraries and incompatible build tools.  These should be reasonably
+easy to fix.  Missing library locations can be appended to the
+AM_CFLAGS variable in the src/Makefile.am file.  libgsl supplies a
+gsl-config command that can provide information about the installation
+state.  gsl-config --cflags and/or gsl-config --libs should give the
+information needed.
+
+In the case of build incompatibility, the easiest solution is to run
+the command sequence:
+
+aclocal
+autoconf
+automake --add-missing
+
+to ensure that the local build matches the tools installed.
+
+DISTRIBUTION/COPYING/NOTICES
+
+ROBOSPECT is copyright 2010-2013 Chris Waters and Julie Hollek, so
+please don't steal it and pretend you wrote it.  ROBOSPECT is free
+software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+
+This will likely contain a GPL reference in the future.
+
+Please feel free to add new modules to ROBOSPECT, although we would
+appreciate a copy as well so that these modules can be incorporated
+into future versions of ROBOSPECT.
+
+All bug reports should be sent to watersc1@ifa.hawaii.edu
+
+ROBOSPECT is/will be available online at:
+http://www.ifa.hawaii.edu/users/watersc1/robospect.html
+
+
+USAGE
+
+The following examples show a small set of "cookbook" examples that
+can be used to quickly perform fits without reading through the
+description of all the program options.  See below for further
+description of the command line options and file formats.
+
+## Print help page with all command line parameters
+robospect -h
+
+## Run a normal fit on input stellar absorption spectra example.dat,
+## saving results to rs.out.  ROBOSPECT will attempt to find all lines
+## with peak S/N > 5.0 to fit.
+robospect -F -f 5.0 -P /tmp/example1 example.dat
+
+## As above, but using a specified linelist in addition to the lines
+## identified by robospect
+robospect -L lines.dat -F -f 5.0 -P /tmp/example2 example.dat
+
+## As above, with verbosity increased to show line fitting activity
+robospect -L lines.dat -F -f 5.0 -P /tmp/example3 example.dat -v line -v screen
+
+## Fit a flux calibrated spectrum, changing the continuum size to match
+## an increase in resolution:
+robospect -L lines.dat -F -f 5.0 -P /tmp/example4 fc_example.dat --loosen --flux_calibrated -V 10
+
+## Fit the flux calibrated spectrum again, but change the continuum 
+## estimation module to account for a large gradient in continuum values.
+robospect -C logboxcar -L lines.dat -F -f 5.0 -P /tmp/example4 fc_example.dat --loosen --flux_calibrated -V 10
+
+
+OPTIONS
+
+The command line options for ROBOSPECT can be examined using the -h
+option.  In addition to listing the available options, this also
+displays the values of each option (whether derived from the default
+settings, or specified by the user on the command line).
+
+The following list reviews the help block (as of v2.7), along with
+the default options:
+
+> Usage: ./src/robospect <options> <input.spectrum>
+
+An input spectrum must be specified on the command line.  The format
+of this spectrum is detailed below (INPUT FILES).
+
+>   -h, --help                     This help                            (found)
+
+Summarize the current values of all command line options.  
+
+>                         FITTING PARAMETERS
+
+These options control the behavior of the fitting algorithms, and
+should generally be fixed for spectra of similar resolution and
+quality.
+
+>  -V, --continuum_box <N_AA>     Width of box used for continuum
+>                                  and noise estimates.                (40.000000)
+
+For the default boxcar continuum model, a box size is necessary to
+filter the spectrum.  This value specifies the width of that box in
+Angstroms (see INPUT FILES below for notes on units).  This value may
+be automatically changed by the continuum modeling code if this value
+is either too small (the number of samples in the box drops below 5)
+or too large (the number of samples includes a significant fraction of
+the spectrum size).  Ideally, this number should be larger than any
+spectral feature, but smaller than any known continuum error features
+(such as poorly connected echelle orders).
+
+>  -r, --deblend_radius <N_sig>   Number of a line's stdev to look
+>                                  for possibly blended lines.         (4.000000)
+
+Deprecated option.
+
+The standard deblending code assigns lines into blend groups if their
+peaks are close relative to the line widths (using the Gaussian sigma
+value for the lines).  This value defines how "close" two lines must
+be before they are assigned to the same group.  This radius is applied
+to the sum of the line widths, such that two lines are grouped if
+abs(x1 - x2) < radius * (sigma1 - sigma2).
+
+>  -R, --deblend_ratio <F>        Fraction of a line's peak to bother
+>                                  with possibly blended lines.        (0.100000)
+
+Deprecated option.  
+
+>  -d, --deblend_iterations <N>   Number of times to attempt to find
+>                                  neighboring lines.                  (3)
+
+Deprecated option.
+
+>  -T, --tolerance <eps>          Tolerance value for fitting.         (0.001)
+
+Set the fitting tolerance used to determine when a line solution has
+converged.  After a given line fitting iteration, each line parameter
+is defined to have converged if:
+
+abs( (P_{i-1} - P_{i})/P_{i-1} ) < tolerance
+
+Similarly, the chi^2 solution is also checked, and if the chi^2
+improvement is small:
+
+abs( (chi_{i-1} - chi_{i})/chi_{i-1} ) < tolerance
+
+then the fit has converged and no further iterations are performed.
+
+>                        MODEL SELECTION
+
+These options control which modules to use to fit the lines,
+continuum, and noise models.  Many of these modules are either
+deprecated or still in development, and therefore may not supply a
+useful fit.  Additional models can be added with minimal coding and
+effort, as discussed below (ADDING MODULES).
+
+>  -C, --continuum_model <NAME>   Select continuum model to use:       (boxcar)
+
+Select the continuum model to use.  Note that the continuum is
+calculated with the line solution from previous iterations subtracted,
+which results in low contamination of the continuum model due to
+strong lines.  
+
+>        boxcar (default)            Simple boxcar model
+>        logboxcar                   log10 boxcar model
+
+Use a simple median boxcar filtering method to calculate the continuum
+level.  The logboxcar module first takes the logarithm of the spectrum
+flux, which improves the model in the case of large gradients in the
+continuum. These modules are the most robust for the spectra that
+ROBOSPECT has been tested with.
+
+>        peak                        Fit boxcar across maxima
+
+Deprecated.  Attempts to place a fit along the "peaks" in the
+spectrum, in an attempt to closer match hand measurements in low S/N
+spectra.
+
+>        blackbody                   Fit blackbody curve to continuum
+>        powerlaw                    Fit powerlaw to continuum
+
+Fit either a blackbody or a powerlaw function to the spectrum.  
+
+>        histogram                   Fit Gaussian to data histogram
+
+Deprecated.  Use a boxcar as above, but fit a Gaussian to a histogram
+of the data to construct a more robust estimate of the median.  Due to
+the subtraction of lines before the continuum is modeled, this module
+and the boxcar module yield very similar results, with the boxcar
+module executing far faster.
+
+>        null                        Do no fit, assume continuum = 1.0
+
+Assume that no continuum fitting is necessary, and set the continuum
+to a fixed value of 1.0.  Unuseful for scientific results, but very
+useful in debugging ROBOSPECT issues.
+
+>        fft                         Use FFT frequency-space filtering
+>        devel                       Development continuum model
+>        bspline                     Devel: better with discontinuities
+
+Development modules that are not likely to work.  
+
+>  -N, --noise_model <NAME>       Select noise model to use:           (boxcar)
+
+Select the module to use in estimating the spectrum noise.  Some
+continuum modules above will set the noise while calculating the
+continuum, but this option can be used to select a different
+calculation method.
+
+>        boxcar (default)            Simple boxcar model
+
+Calculate the noise based on the median absolute deviation value in a
+box.
+
+>        Poisson                     Poissonian noise model
+
+Development module.  Calculate the noise in a spectrum sample as the
+sqrt(flux).  This has not been tested in fitting, and may not provide
+useful results.
+
+>        null                        Do no fit, inherit from continuum fit.
+
+If the continuum model supplies a noise model, this can be used to
+skip extra execution of the noise code.  In general, ROBOSPECT
+correctly determines when the noise code can be safely skipped.
+
+>  -M, --line_model <NAME>        Select line model to use:            (best)
+
+Select the line fitting module to use.  The majority of these modules
+are deprecated, and so only the three currently developed are noted
+here.
+
+>        null                        Do no fit, assume lines = 0.0
+
+Skip the line fitting stage entirely.  This is useful for debugging
+the continuum and noise modules.
+
+>        pre                         Estimate lines from FWHM
+
+Do a quick preliminary fit by assigning the line center to the
+centroid of the data around the line peak.  This center is then used
+to estimate the FWHM value of the line, and that width is then used to
+construct a line flux (and equivalent width) based on the assumption
+that the line is a simple Gaussian.  This is a very fast way to fit
+the lines, but it does not handle blended lines well, nor does it
+provide the most accurate fits.  
+
+>        best (default)              Pre + automatic deblending (best)
+
+Do the preliminary fit as described above, assign lines to blend
+groups, and then perform a non-linear least squares minimization to
+each blend group to find the best fitting values for all line
+parameters.  This is much slower than the simple "pre" fit, but
+provides accurate results that are discussed in Waters & Hollek
+(2013).
+
+>        gauss                       Simple NLLS Gaussian fitter
+>        fixed                       Simple NLLS Gaussian, fixed mean
+>        nofit                       Do not fit lines
+>        twostage                    Pre + Gauss
+>        twosticky                   Pre + Gauss + fixed
+
+Deprecated modules that should not be used for scientific results.
+
+>  -Q, --function_model <NAME>    Select line function to use:         (Gaussian)
+
+Select the functional form for the lines to be fit.  
+
+>        Gaussian                    Gaussian model.
+
+All lines are fit as simple Gaussians.
+
+>        Lorentzian                  Lorentzian model (experimental).
+
+All lines are fit as Lorentzians.
+
+>        Voigt                       Pseudo-Voigt model (experimental).
+
+All lines are fit as a blend of Gaussian and Lorentzians, such that:
+PseudoVoigt = (1 - eta) * Gaussian + eta * Lorentzian
+
+>        Hjerting                    Voigt approximation (experimental).
+
+All lines are fit using the Hjerting approximation to the Voigt
+profile.  This retains the definition of eta as in the pseudo-Voigt
+method (eta = 0 => Gaussian, eta = 1 => Lorentzian), but uses a more
+complicated mathematical form.
+
+>  -D, --deblend_model <NAME>     Select deblending model to use:      (null)
+>        null (default)              Do not deblend lines.
+>        nlls                        NLLS Gaussian method.
+
+Deprecated.  Independent deblending provides worse results than the
+simultaneous fitting provided by the "-L best" module described above.
+
+>                        LINE IDENTIFICATION
+
+Control the way ROBOSPECT handles line catalogs.  One of -L or -F must
+be specified to provide ROBOSPECT with a set of lines to fit (using
+both -L and -F is also allowed and generally provides the best
+results).
+
+>  -L, --line_list <file>         Fit the lines specified in this file ()
+
+Supply a list of line centers from a file (see INPUT FILES below for
+formats).  These lines are considered a priority, and have plots
+constructed for the line fits if plplot support has been compiled into
+the code.
+
+>  -F, --naive_find_lines         Attempt to find additional lines to
+>                                  fit. Uses sigma threshold.          ()
+
+Identify new lines from the data that are above a given noise
+threshold.  The S/N value for these lines are listed in the output
+line catalog in the comment field (see OUTPUT FILES below).  This
+identification is "naive" in that it does not do a matched filter
+search using a PSF to maximize the identification of lines.
+
+>  -f, --find_sigma <s>           Set the threshold for line finding.  (3.000000)
+
+Set the threshold for the naive line finding algorithm.
+
+>      --wavelength_min_error <dw>Set the limits for acceptable error 
+>                                  in the peak finding code.           (0.100000)
+>      --wavelength_max_error <dw>Set the limits for acceptable error 
+>                                  in the peak finding code.           (0.500000)
+>      --wavelength_limit <N>     Set the limit for the number of lines
+>                                  with bad wavelengths before the
+>                                  code attempts to correct.           (2000)
+
+Attempt to correct the input line list to match the spectrum in the
+case where the spectrum wavelength solution is faulty.  This
+crossmatches all lines in the input line list with the peaks
+identified in the spectrum.  If more than "wavelength_limit" lines
+have a peak that is nearby (\delta\lambda < "wavelength_max_error"),
+but an offset greater than a threshold (\delta\lambda >
+"wavelength_min_error"), then a wavelength solution correction is
+calculated as a linear trend between the line list and the spectrum.
+This trend is then used to modify the expected line centers in the
+line list, to avoid issues interpolating the spectrum onto a new grid.
+
+In most cases, if you didn't follow this discussion, don't worry, you
+probably don't need it.  ROBOSPECT is not designed to do a full
+calibration of the input spectrum, so it's best to have the wavelength
+solution correct, and then not bother using these options.
+
+>      --radial_velocity <v>      Apply a known radial velocity
+>                                  correction to wavelengths in units
+>                                  of (wavelength_unit * 1e13)/sec.    (0.000000)
+
+Modify the line list to match a spectrum with a known radial velocity
+offset.  Assuming the input spectrum has samples measured in
+Angstroms, this option needs to be supplied the radial velocities in
+kilometers/second.
+
+>      --measure_radial_velocity  Attempt to match lines to linelist to
+>                                  measure the radial velocity.        (0)
+
+A radial velocity correction can be calculated from the input spectrum
+and the supplied line list.  Briefly, the algorithm identifies a set
+of strong lines (10-sigma), and determines an average width and flux.
+These values are used to construct two fake spectra: the first with
+Gaussians at the line centers from the set of strong lines with the
+average widths and fluxes; the second using the same line shapes but
+with the line centers from the input line list.  For a set of radial
+velocity steps from the minimum to maximum values, the linelist lines
+are transformed, and the cross-correlation of these two spectra is
+calculated.  The peak of this correlation spectra is then identified
+and the process repeated until the error in the radial velocity is
+smaller than the specified value.  This best radial velocity is then
+used to transform the input line list centers to match the observed
+line centers in the data.
+
+As in the user specified radial velocity correction, the velocity
+units are in km/s if the input spectrum has wavelength units of
+Angstroms.
+
+>      --radial_velocity_range    Search for radial velocities +/- this
+>                                  value.                              (300.000000)
+
+Set the radial velocity range around 0 km/s to search.
+
+>      --radial_velocity_error    Set the maximum rv error allowed.    (0.010000)
+
+Repeat cross-correlation search until the uncertainty in the radial
+velocity is smaller than this value.
+
+>      --radial_velocity_step     Set the number of correlation steps. (100)
+
+Number of steps to use to search the radial velocity range.  With the
+default settings, this sets the steps at 6 km/s in width, producing a
+convergent radial velocity in two iterations.
+
+>                        PROGRAM CONTROL
+
+These options control the output file generation and the program
+decision making.
+
+>  -i, --iterations <i>           Number of continuum/line iterations  (1)
+
+Define the number of iterations of full continuum/line fitting to
+perform.  A single iteration will provide a decent estimate, but the
+line solutions greatly improve with increased iterations.  The test
+spectra used in Waters & Hollek 2013 used 5 iterations, with no
+evidence if dramatic improvement beyond that number.
+
+>      --loosen                   Loosen line quality checks. Useful   ()
+>                                  with flux calibrated data.
+
+This option allows the line flagging checks to be slightly less
+aggressive at removing questionable lines.  This generally isn't
+required for absorption spectra, as the width/flux ratios are more
+constrained than those found in emission spectra.
+
+>      --flux_calibrated          Input is in flux units(erg/s/cm^2/A) (0)
+
+This option should be used if the input spectra are flux calibrated
+instead of continuum normalized.
+
+>      --fits_row <N>             Fit row N of 2-d fits spectrum.      (0)
+
+For FITS input spectra with multiple orders assigned to different rows
+of a single 2-d image, specify only a single row/order to fit.
+
+>  -I, --save_temp                Save intermediate results            ()
+
+Save the line catalog and spectra models for all iterations instead of
+saving only the final result.
+
+>  -A, --plot_all                 Default plot only contains lines
+>                                  from the line list. This option
+>                                  allows found lines in the plot.     ()
+
+If plplot plotting support is compiled in, construct plots for all
+lines in the catalog, not just the lines specified in the input line
+list.
+
+>  -P, --path_base <output_root>  Output file rootname.                ()
+
+Define an path for output products.  This is highly recommended, as it
+should prevent any accidental overwriting of already existing data
+products.  See OUTPUT FILES for more details.
+
+>  -v, --verbose <verbose_level>  Change verbosity level:              (0x0001)
+>                                  A logfile is used for most levels.
+>        silent                      No messages              ()
+>        default                     Normal messages          (found)
+>        io                          File IO                  ()
+>        id                          Line identification      ()
+>        line                        Line fitting             ()
+>        continuum                   Continuum fitting        ()
+>        noise                       Noise fitting            ()
+>        math                        Math operations          ()
+>        screen                      Print messages to screen ()
+>        debug                       Code debug messages      ()
+>        all                         Enable all messages      ()
+
+Enable logging of various components.  Enabling line and screen
+facilities ("-v line -v screen") provides a useful peek at code
+operation (i.e., running ROBOSPECT produces lots of output to the
+screen, making that terminal look busy).
+
+
+INPUT FILES : Input spectra
+
+Both ASCII and FITS spectra can be specified for use with ROBOSPECT.
+ASCII data must have the following format:
+
+WAVELENGTH FLUX OPTIONAL_ERROR OPTIONAL_ORDER
+
+The WAVELENGTH and FLUX columns must exist to define the spectrum.
+The OPTIONAL_ERROR column can be used to supply an external estimate
+of the spectrum error to ROBOSPECT.  In general, this is not necessary
+as ROBOSPECT will construct its own estimate of the error.  However,
+if an OPTIONAL_ORDER is to be supplied, a column of zeroes in the
+OPTIONAL_ERROR column is needed for formatting.  The OPTIONAL_ORDER
+column may contain a series of integers that denote that a single
+input spectrum consists of multiple spectral orders.  Each order is
+fit independently, and produces its own output files.  No comments or
+text should appear in the input spectrum file.
+
+FITS spectra are supported if CFITSIO library support has been
+compiled into ROBOSPECT.  The spectrum should exist in the primary
+image extension, and may contain either a 1-dimensional spectrum
+(which is read into the WAVELENGTH and FLUX components according to
+the FITS WCS information) or a 2-dimesional set of spectra (which is
+read as a multi-order spectrum based on the FITS WCS information).  
+
+If a valid FITS spectrum is not correctly read, this is likely due to
+the spectrum not matching examples of spectra that were available when
+writing the code.  This kind of bug can likely be fixed quickly.
+
+INPUT FILES : Input linelist
+
+The input linelist is an optional but highly recommended way to
+indicate which lines ROBOSPECT will fit.  The format for this linelist
+is an ASCII file with columns:
+
+LINE_CENTER_WAVELENGTH OPTIONAL_COMMENT
+
+All text after the first column (containing the expected line center)
+are converted into a comment string for that line, which is retained
+and returned in the output line catalog.  
+
+
+OUTPUT FILES : robolines line catalog
+
+Upon completion of fitting, all lines in the internal line catalog are
+saved to an output file of the form:
+
+PATH_BASE[_orderXXX].robolines
+
+This file contains a comment block at the beginning of the file
+listing the command line used to generate the file, a summary of
+common flag hex values, and the column headers with the units for
+each.  The columns returned are:
+
+Column  Quantity    Description
+     1  x0          Linelist supplied center/auto-found line peak
+     2  mean	    Best fitting line center
+     3  sigma	    Best fitting line width (Gaussian sigma)
+     4  flux	    Best fitting line flux
+     5  eta	    Best fitting line eta parameter (for Voigt line profiles)
+     6  dmean	    Error in line center (based on fit covariance matrix)
+     7  dsigma	    Error in line width
+     8  dflux	    Error in line flux
+     9  deta	    Error in line eta
+    10  FWHM_mean   "pre" module estimate of line center
+    11  FWHM_s	    "pre" module estimate of line width
+    12  FWHM_F	    "pre" module estimate of line flux
+    13  EQW/FLUX    Line equivalent width/line total flux
+    14  dEQW/dFLUX  Error in line equivalent width/line total flux
+    15  chi	    chi^2 value of line fit
+    16  flags	    Fit quality flags (described below)
+    17  group	    Deblend group this line was fit with.
+    18  comment	    Comment field from linelist or from line finding.
+
+The "flags" column contains the bitwise-AND of a set of quality flags
+that are determined for each line.  The program
+utilities/robo_decode_flags.pl can be used to convert this hexidecimal
+string into a list of flag parameters.  The current list of defined
+flags are:
+
+ROBO_MAX_ITER         0x000001      Solver hit maximum number of iterations 
+		      		    without returning a fit within tolerance. 
+ROBO_FIT_FAIL         0x000002      Solver returned impossible value and 
+		      		    aborted further computation. 
+ROBO_FIT_IGNORED      0x000004      Line rejected and ignored from consideration 
+		      		    due to concerns with fit parameters. 
+ROBO_FIT_REFUSED      0x000008      Line rejected and refused from consideration 
+		      		    due to lack of chi^2 improvement with inclusion. 
+ROBO_FIT_LARGE_SHIFT  0x000010      Fit mean shifted significantly from 
+		      		    expected initial value. 
+ROBO_FIT_RECENTER     0x000020      Fit mean reset to initial value and refit 
+		      		    with fixed mean. 
+ROBO_BAD_WAVELENGTH   0x000040      Suspected bad wavelength solution around 
+		      		    this line. 
+ROBO_FIX_WAVELENGTH   0x000080      Automatically corrected supplied line 
+		      		    peak to fit bad wavelength solution. 
+ROBO_FIT_BLEND        0x000100      Line believed to be part of a blend. 
+ROBO_FIT_DEBLEND      0x000200      Line solution based on deblending modeling. 
+ROBO_ALT_REFUSED      0x001000      Alternate line model rejected and refused
+		      		    due to lack of chi^2 improvement with inclusion. 
+ROBO_BAD_ERROR_VAL    0x002000      Error value out of range and ignored.    
+ROBO_RESET            0x0000a0      Flags to reset on each solve iteration. 
+ROBO_BAD_FIT          0x00000f      Generic concerns with line.  Not used in final model. 
+ROBO_INIT             0x010000      This signifies we haven't done anything to the line yet. 
+ROBO_FUNC_GAUSSIAN    0x100000      Line fit using a Gaussian model. 
+ROBO_FUNC_LORENTZIAN  0x200000      Line fit using a Lorentzian model. 
+ROBO_FUNC_PSEUDOVOIGT 0x400000      Line fit using a Pseudo-Voigt model. 
+ROBO_FUNC_HJERTING    0x800000	    Line fit using a Hjerting model.
+
+In general, the column in which a bit is raised signifies a different
+class of issues:
+
+0x00000*	Fit failed for some reason.
+0x0000*0	Line had a correctable problem.
+0x000*00	Line was deblended.
+0x00*000	Fit has an issue with the "pre" fit model.
+0x0*0000	Internal flags for state control.
+0x*00000	Line function notification flag.
+
+OUTPUT FILES : robospect spectrum file
+
+Upon completion of fitting, all lines that have flag values that do
+not exclude them as having an invalid fit are used to construct a
+final model spectrum.  This model is written to a file with the form:
+
+PATH_BASE[_orderXXX].robospect
+
+This file contains a comment block at the beginning of the file
+listing the command line used to generate the file and the column
+headers.  The columns returned are:
+
+Column  Value       Description  
+     1  wavelength  Input spectrum sample wavelength
+     2  flux	    Input spectrum sample flux
+     3  err_est	    Calculated noise value at this sample
+     4  continuum   Calculated continuum value at this sample
+     5  lineflux    Calculated line flux (without continuum model) at this sample
+     6  model_spect Complete model (continuum + lines) spectrum
+     7  fitflux	    Internal "fit flux" value used while fitting lines
+
+OUTPUT FILES : robo.ps spectrum plots
+
+This postscript file contains plots of either linelist specified or
+all lines (with the "-A" option), if plplot plotting support was
+compiled into ROBOSPECT.  These plots are written to a file with the
+form:
+
+PATH_BASE[_orderXXX].robo.ps
+
+OUTPUT FILES : robo.log log file
+
+This file contains all output from the verbose logging.  Please
+include this file in any bug reports or code queries.  This log is
+written to a file with the form:
+
+PATH_BASE.robo.log
+
+ADDING MODULES
+
+This will be more detailed in the future, but the steps for adding a
+new module are:
+
+1) Create a source file in src/models/ to contain the module.  Write
+   the module code.
+2) Add the module prototype to robo.h, and augment enum values to
+   support the new module.
+3) Add the module to the appropriate place in src/model.c to ensure it
+   is called correctly.
+4) Quickly document the new module in src/config.c so it appears in
+   the program help.
+5) Add new source files to Makefile.am, and rerun
+   aclocal/automake/autoconf as needed.
+6) Compile/test/submit changes for inclusion in future versions.

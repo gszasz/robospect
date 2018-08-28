@@ -1,0 +1,14 @@
+# Configure source code and check for library dependencies.
+./configure
+
+# Build binary.
+make
+
+# Install (this will install robospect in /usr/local/bin/, which likely 
+# requires root access).
+make install
+
+# The robospect binary will be located in ./src/robospect and can be
+# copied to any bin directory in your path.
+
+# Please read the README and doc/QUICKSTART files for more information.

@@ -1,0 +1,66 @@
+This is ROBOSPECT, a program to automatically measure spectral line
+profiles with minimal user interaction.  
+
+Current availability and documentation are available at
+http://www.ifa.hawaii.edu/users/watersc1/robospect.html
+
+Email <watersc1@ifa.hawaii.edu> or <julie@astro.as.utexas.edu> for
+more information.
+
+*** Installation Instructions *** 
+
+The following libraries are used by ROBOSPECT:
+
+  * libgsl : required. Tested to work with versions > v1.9.
+  * libcfitsio : optional requirement to allow FITS image input.
+  * libplplotd : optional requirement to produce line fit plots.
+
+Compilation is done by simply running:
+./configure && make
+
+This produces a binary file src/robospect which can then be installed
+into the user's path.
+
+Further documentation is available in the doc directory.
+
+*** Compilation problems ***
+
+The two most common issues that prevent compilation are missing
+libraries and incompatible build tools.  These should be reasonably
+easy to fix.  Missing library locations can be appended to the
+AM_CFLAGS variable in the src/Makefile.am file.  libgsl supplies a
+gsl-config command that can provide information about the installation
+state.  gsl-config --cflags and/or gsl-config --libs should give the
+information needed.
+
+In the case of build incompatibility, the easiest solution is to run
+the command sequence:
+
+aclocal
+autoconf
+automake --add-missing
+
+to ensure that the local build matches the tools installed.
+
+*** Usage ***
+
+The default parameters for ROBOSPECT should produce useful results,
+but here are a few examples to illustrate standard uses:
+
+## Print help page with all command line parameters
+robospect -h
+
+## Run a normal fit on input stellar absorption spectra example.dat,
+## saving results to rs.out.  ROBOSPECT will attempt to find all lines
+## to fit.  robospect -F -P rs.out example.dat
+
+## As above, but using a specified linelist to fit from.
+robospect -L lines.dat -F -P rs.out example.dat
+
+## As above, with verbosity increased to show line fitting activity
+robospect -L lines.dat -F -P rs.out example.dat -v line -v screen
+
+## Fit a flux calibrated spectrum, changing the continuum size to match
+## an increase in resolution:
+robospect -L lines.dat -F -P rs.out fc_example.dat --loosen --flux_calibrated -V 10
+

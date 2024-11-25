@@ -77,7 +77,7 @@ void generate_model_continuum_blackbody(opts *options, data *D, model *M) {
 	      "gmcbb: (%d/%d) %g (%g %g %g) (PREFIT)",
 	      i,D->N,
 	      tau * HCKB,s,A,eta,
-	      chi,iterations
+	      99e99,iterations
 	      );
 
   iterations = multifunction(D->x,D->y,EE,D->N,

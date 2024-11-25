@@ -2,7 +2,7 @@
 #include "robo.h"
 
 char *generate_filename(opts *options, char *rule) {
-  char root[1024];
+  static char root[1024];
   char order[16];
   if ((options->max_order != 0)&&(strcasecmp(rule,"LOG") != 0)) {
     snprintf(order,sizeof(order),"_order%03d",options->order);

@@ -24,7 +24,8 @@ fits_WCS *read_fits_WCS(fitsfile *ff) {
   char keyword[9];
   char *fullspect;
   char *token;
-  int  k;
+  int  k, pos;
+  int  ret;
   
   fits_read_keyword(ff,"WAT0_001",value,comment,&status);  FRE;
   if ((strcasecmp(value,"'system=world'") == 0)||(status != 0)) {
@@ -89,12 +90,15 @@ fits_WCS *read_fits_WCS(fitsfile *ff) {
     status = 0;
     fullspect = malloc(WCS->N * 2 * 80);
     
-    for (k = 1; k < WCS->N * 2; k++) {
-      snprintf(keyword,sizeof(keyword),"WAT2_%03d",k);
+    for (k = 1, pos = 0; k < WCS->N * 2; k++) {
+      ret = snprintf(keyword, sizeof(keyword), "WAT2_%03d", k);
+      if (ret < 0) {
+        fprintf(stderr, "robospect: %s: %d: Buffer overflow\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+      }
       fits_read_key(ff,TSTRING,keyword,value,NULL,&status);
       if (status == 0) {
-	/* This right here? This is fucking ridiculous. */
-	sprintf(fullspect,"%s%- 68s",fullspect,value); 
+        pos += sprintf(&fullspect[pos], "%-68s", value);
       }
       else {
 	k = WCS->N * 3;

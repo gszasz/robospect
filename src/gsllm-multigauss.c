@@ -177,7 +177,9 @@ int lm_multigauss(double *X, double *Y, double *E, int N,
     data.iteration++;
     status = gsl_multifit_fdfsolver_iterate(S);
     status = gsl_multifit_test_delta(S->dx,S->x,1e-35,1e-35);
-    gsl_multifit_covar(S->J,0.0,covar);
+    gsl_matrix *J = gsl_matrix_alloc(f.n, f.p);
+    gsl_multifit_fdfsolver_jac(S, J);
+    gsl_multifit_covar(J, 0.0, covar);
     for (j = 0; j < M; j++) {
       fprintf(stderr,"mml: (%d/%d) %d %f %f (%f,%f,%f) +- (%f,%f,%f)\n",
 	      j,M,data.iteration,-1.0,0.0,data.m[j],data.s[j],data.A[j],data.dm[j],data.ds[j],data.dA[j]);

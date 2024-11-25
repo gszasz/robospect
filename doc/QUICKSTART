@@ -7,7 +7,7 @@ INSTALLATION
 
 The following libraries are used by ROBOSPECT:
 
-  * libgsl : required. Tested to work with versions > v1.9.
+  * libgsl : required. Tested to work with versions > v2.0.
   * libcfitsio : optional requirement to allow FITS image input.
   * libplplotd : optional requirement to produce line fit plots.
 

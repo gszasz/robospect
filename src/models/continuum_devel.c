@@ -16,6 +16,10 @@ void generate_model_continuum_devel(opts *options, data *D, model *M) {
   int i,j;
   stats *S1;
   double *v1 = malloc(sizeof(double) * D->N);
+  if (v1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int n1;
 
   for (i = 0; i < D->N; i += 1) {
@@ -37,6 +41,10 @@ void generate_model_continuum_devel(opts *options, data *D, model *M) {
     S1 = array_stats(v1,n1);
     /* Create scratch array we can sort; */
     double *v2 = malloc(sizeof(double) * n1);
+    if (v2 == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     for (j = 0; j < n1; j++) {
       v2[j] = v1[j] - S1->med;
     }
@@ -54,6 +62,10 @@ void generate_model_continuum_devel(opts *options, data *D, model *M) {
     
     /* Construct cdf */
     double *cdf = malloc(sizeof(double) * n1);
+    if (cdf == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
 
     for (j = 0; j < n1; j++) {
       cdf[j] = 1.0 * (j) / (1.0 * n1);
@@ -61,6 +73,10 @@ void generate_model_continuum_devel(opts *options, data *D, model *M) {
 
     /* Construct a weight */
     double *w = malloc(sizeof(double) * n1);
+    if (w == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
 
     M->continuum[i] = 0.0;
     ns = 0.0;
@@ -78,6 +94,10 @@ void generate_model_continuum_devel(opts *options, data *D, model *M) {
 
     int count,k;
     double *pdf = malloc(sizeof(double) * 20);
+    if (pdf == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     for (k = 0; k < 20; k++) {
       pdf[k] = 0;
     }

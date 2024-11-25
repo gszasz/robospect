@@ -198,9 +198,25 @@ int multifunction(double *X, double *Y, double *E, int N,
   
   /* Save initial values in case we need to reset. */
   mi = malloc(sizeof(double) * M);
+  if (mi == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   si = malloc(sizeof(double) * M);
+  if (si == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   Ai = malloc(sizeof(double) * M);
+  if (Ai == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   etai = malloc(sizeof(double) * M);
+  if (etai == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (j = 0; j < M; j++) {
     mi[j] = m[j];
     si[j] = s[j];
@@ -211,14 +227,46 @@ int multifunction(double *X, double *Y, double *E, int N,
 
   /* Prepare test values */
   m1 = malloc(sizeof(double) * M);
+  if (m1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   s1 = malloc(sizeof(double) * M);
+  if (s1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   A1 = malloc(sizeof(double) * M);
+  if (A1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   eta1 = malloc(sizeof(double) * M);
+  if (eta1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   m2 = malloc(sizeof(double) * M);
+  if (m2 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   s2 = malloc(sizeof(double) * M);
+  if (s2 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   A2 = malloc(sizeof(double) * M);
+  if (A2 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   eta2 = malloc(sizeof(double) * M);
+  if (eta2 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   /* Iterate until either the fractional proposed update is smaller than */
   /* the tolerance, or we reach 1000 iterations (which suggests no fit). */
@@ -597,9 +645,25 @@ int multifunction(double *X, double *Y, double *E, int N,
   
   /* Save initial values in case we need to reset. */
   mi = malloc(sizeof(double) * M);
+  if (mi == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   si = malloc(sizeof(double) * M);
+  if (si == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   Ai = malloc(sizeof(double) * M);
+  if (Ai == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   etai = malloc(sizeof(double) * M);
+  if (etai == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (j = 0; j < M; j++) {
     mi[j] = m[j];
     si[j] = s[j];

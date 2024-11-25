@@ -106,16 +106,44 @@ int gaussfit(double *X, double *Y, double *E, int N,
   *A = *A * pow(*s * sqrt(2 * M_PI),-1);
   /* Allocate space for matrices. */
   dB = malloc(N * sizeof(double));
+  if (dB == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   a  = malloc(N * sizeof(double *));
+  if (a == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   a[0] = malloc(N * 3 * sizeof(double));
+  if (a[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (i = 1; i < N; i++) {
     a[i] = a[0] + i * 3;
   }
 
   C = malloc(3 * sizeof(double *));
+  if (C == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   C[0] = malloc(9 * sizeof(double));
+  if (C[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   ata = malloc(3 * sizeof(double *));
+  if (ata == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   ata[0] = malloc(9 * sizeof(double));
+  if (ata[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (i = 1; i < 3; i++) {
     C[i] = C[0] + i * 3;
     ata[i] = ata[0] + i * 3;

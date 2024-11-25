@@ -22,14 +22,50 @@ void deblend_lines_nlls(data *D, model *M) {
   for (i = 1; i < M->L->b; i++) {
     B = 1;
     m = malloc(B * sizeof(double));
+    if (m == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     s = malloc(B * sizeof(double));
+    if (s == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     F = malloc(B * sizeof(double));
+    if (F == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     dm= malloc(B * sizeof(double));
+    if (dm == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     ds= malloc(B * sizeof(double));
+    if (ds == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     dF= malloc(B * sizeof(double));
+    if (dF == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     vm= malloc(B * sizeof(int));
+    if (vm == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     vs= malloc(B * sizeof(int));
+    if (vs == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     vF= malloc(B * sizeof(int));
+    if (vF == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     	       
     for (j = 0; j < M->L->l; j++) {
       if (M->L->blend_group[j] == i) {

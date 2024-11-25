@@ -131,6 +131,10 @@ int lm_multigauss(double *X, double *Y, double *E, int N,
   int i,j;
   
   x_init = malloc(3 * M * sizeof(double));
+  if (x_init == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   data.m = m;
   data.s = s;

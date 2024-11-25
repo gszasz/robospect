@@ -8,6 +8,10 @@ void generate_model_continuum_robust_linear(opts *options, data *D, model *M) {
   double *y; 
 
   int *count = malloc(sizeof(int) * D->N);
+  if (count == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int i,j,k = 0,z = 0;
   
   for (i = 0; i < D->N; i++) {
@@ -16,7 +20,15 @@ void generate_model_continuum_robust_linear(opts *options, data *D, model *M) {
   
   for (i = 0; i < D->N; i++) {
     x = malloc(sizeof(double) * (options->continuum_box + 1));
+    if (x == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     y = malloc(sizeof(double) * (options->continuum_box + 1));
+    if (y == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     k = 0;
     for (j = -1 * (int) options->continuum_box / 2; j <= (int) options->continuum_box / 2; j++) {
       z = i + j;

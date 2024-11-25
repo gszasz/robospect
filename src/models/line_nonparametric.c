@@ -28,7 +28,15 @@ void measure_lines_nonparametric(data *D, model *M) {
   int     envelope_N = 5;
   int     envelope_i = 0;
   double *envelope_X = malloc(sizeof(double) * envelope_N);
+  if (envelope_X == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double *envelope_Y = malloc(sizeof(double) * envelope_N);
+  if (envelope_Y == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double x1,x2;
   double y1,y2;
   double dy1,dy2;

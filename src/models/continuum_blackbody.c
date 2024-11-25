@@ -20,6 +20,10 @@ void generate_model_continuum_blackbody(opts *options, data *D, model *M) {
 
   double A,tau,lT;
   double *EE = malloc(sizeof(double) * D->N);
+  if (EE == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double l0,l1;
   double f0,f1;
   double K;

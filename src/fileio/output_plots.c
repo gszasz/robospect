@@ -213,10 +213,30 @@ void render_line_plots(opts *options, data *D, model *M) {
       }
     }
     x = malloc(sizeof(double) * Nsamples);
+    if (x == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     data = malloc(sizeof(double) * Nsamples);
+    if (data == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     model = malloc(sizeof(double) * Nsamples);
+    if (model == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     alt_model = malloc(sizeof(double) * Nsamples);
+    if (alt_model == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     continuum = malloc(sizeof(double) * Nsamples);
+    if (continuum == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     for (j = 0; j < Nsamples; j++) {
       x[j] = D->x[j + Noffset];
       data[j] = D->yO[j + Noffset];

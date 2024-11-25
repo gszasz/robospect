@@ -57,18 +57,46 @@ typedef struct {
 
 multigauss_solver *alloc_multigauss_solver(double m, double s, double A, int N) {
   multigauss_solver *S = malloc(sizeof(multigauss_solver));
+  if (S == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int i;
   
   S->a = malloc(N * sizeof(double *));
+  if (S->a == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   S->a[0] = malloc(N * 3 * sizeof(double));
+  if (S->a[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (i = 1; i < N; i++) {
     S->a[i] = S->a[0] + i * 3;
   }
 
   S->C = malloc(3 * sizeof(double *));
+  if (S->C == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   S->C[0] = malloc(9 * sizeof(double));
+  if (S->C[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   S->ata = malloc(3 * sizeof(double *));
+  if (S->ata == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   S->ata[0] = malloc(9 * sizeof(double));
+  if (S->ata[0] == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (i = 1; i < 3; i++) {
     S->C[i] = S->C[0] + i * 3;
     S->ata[i] = S->ata[0] + i * 3;
@@ -133,8 +161,20 @@ int multigauss(double *X, double *Y, double *E, int N,
   double old_chi = 99e99;
   /* Save initial values in case we need to reset. */
   mi = malloc(sizeof(double) * M);
+  if (mi == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   si = malloc(sizeof(double) * M);
+  if (si == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   Ai = malloc(sizeof(double) * M);
+  if (Ai == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (j = 0; j < M; j++) {
     mi[j] = m[j];
     si[j] = s[j];

@@ -22,6 +22,10 @@ void generate_noise_model_boxcar(opts *options, data *D, model *M) {
   int i,j;
   stats *S1;
   double *v1 = malloc(sizeof(double) * D->N);
+  if (v1 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int n1;
   
   for (i = 0; i < D->N; i += 1) {

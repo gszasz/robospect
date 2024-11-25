@@ -10,6 +10,10 @@ void measure_lines_fixedmean_isolation_gaussian(data *D, model *M) {
   int iterations;
 
   double *y = malloc(sizeof(double) * D->N);
+  if (y == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   
   /* Subtract the current model from the data. */
   for (j = 0; j < M->N; j++) {

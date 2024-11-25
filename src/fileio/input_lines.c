@@ -3,30 +3,106 @@
 
 lines *alloc_lines(int size) {
   lines *L = malloc(sizeof(lines));
+  if (L == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->l = size;
   L->b = 1;
   L->m = malloc(size * sizeof(double));
+  if (L->m == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->s = malloc(size * sizeof(double));
+  if (L->s == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->F = malloc(size * sizeof(double));
+  if (L->F == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->eta = malloc(size * sizeof(double));
+  if (L->eta == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   
   L->dm = malloc(size * sizeof(double));
+  if (L->dm == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->ds = malloc(size * sizeof(double));
+  if (L->ds == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->dF = malloc(size * sizeof(double));
+  if (L->dF == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->deta = malloc(size * sizeof(double));
+  if (L->deta == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   
   L->mp = malloc(size * sizeof(double));
+  if (L->mp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->sp = malloc(size * sizeof(double));
+  if (L->sp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->Fp = malloc(size * sizeof(double));
+  if (L->Fp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->etap = malloc(size * sizeof(double));
+  if (L->etap == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   
   L->x0 = malloc(size * sizeof(double));
+  if (L->x0 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->chi = malloc(size * sizeof(double));
+  if (L->chi == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   L->comment = malloc(size * sizeof(char **));
+  if (L->comment == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->manual  = malloc(size * sizeof(int));
+  if (L->manual == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->flags   = malloc(size * sizeof(int));
+  if (L->flags == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->blend_group = malloc(size * sizeof(int));
+  if (L->blend_group == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->x0[0] = 0.0;
   return(L);  
 }
@@ -34,24 +110,96 @@ lines *alloc_lines(int size) {
 void realloc_lines(lines *L, int size) {
   L->l = size;
   L->x0 = realloc(L->x0,size * sizeof(double));
+  if (L->x0 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->chi = realloc(L->chi,size * sizeof(double));
+  if (L->chi == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->m = realloc(L->m,size * sizeof(double));
+  if (L->m == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->s = realloc(L->s,size * sizeof(double));
+  if (L->s == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->F = realloc(L->F,size * sizeof(double));
+  if (L->F == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->eta = realloc(L->eta,size * sizeof(double));
+  if (L->eta == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->dm = realloc(L->dm,size * sizeof(double));
+  if (L->dm == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->ds = realloc(L->ds,size * sizeof(double));
+  if (L->ds == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->dF = realloc(L->dF,size * sizeof(double));
+  if (L->dF == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->deta = realloc(L->deta,size * sizeof(double));
+  if (L->deta == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->mp = realloc(L->mp,size * sizeof(double));
+  if (L->mp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->sp = realloc(L->sp,size * sizeof(double));
+  if (L->sp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->Fp = realloc(L->Fp,size * sizeof(double));
+  if (L->Fp == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->etap = realloc(L->etap,size * sizeof(double));
+  if (L->etap == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   L->comment = realloc(L->comment,size * sizeof(char **));
+  if (L->comment == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->manual  = realloc(L->manual, size * sizeof(int));
+  if (L->manual == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->flags   = realloc(L->flags,  size * sizeof(int));
+  if (L->flags == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   L->blend_group = realloc(L->blend_group, size * sizeof(int));
+  if (L->blend_group == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 }
 
 void free_lines(lines *L) {
@@ -301,7 +449,15 @@ void validate_line_peaks(opts *options, data *D, model *M) {
   log_comment(options,ROBO_VERBOSE_DEBUG,"validating peaks");
   /* Scan for lines that may be offset */
   x = malloc(M->L->l * sizeof(double));
+  if (x == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   dw = malloc(M->L->l * sizeof(double));
+  if (dw == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   for (i = 0; i < M->L->l; i++) {
     /* Find the current peak bin. */
     for (j = j_peak; D->x[j] < M->L->x0[i]; j++) {

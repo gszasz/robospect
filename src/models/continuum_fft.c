@@ -8,6 +8,10 @@
 void generate_model_continuum_fft(opts *options, data *D, model *M) {
   int i;
   double *v = malloc(sizeof(double) * D->N);
+  if (v == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double cutoff;
 
   gsl_fft_real_wavetable * real;

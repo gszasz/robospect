@@ -3,20 +3,56 @@
 
 data *alloc_data(int size) {
   data *D = malloc(sizeof(data));
+  if (D == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->N = size;
   D->x = malloc(size * sizeof(double));
+  if (D->x == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->y = malloc(size * sizeof(double));
+  if (D->y == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->e = malloc(size * sizeof(double));
+  if (D->e == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->yO= malloc(size * sizeof(double));
+  if (D->yO == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   return(D);
 }
 
 void realloc_data(data *D, int size) {
   D->N = size;
   D->x = realloc(D->x,size * sizeof(double));
+  if (D->x == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->y = realloc(D->y,size * sizeof(double));
+  if (D->y == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->e = realloc(D->e,size * sizeof(double));
+  if (D->e == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   D->yO= realloc(D->yO,size * sizeof(double));
+  if (D->yO == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 }
 
 void free_data(data *D) {
@@ -189,12 +225,20 @@ data *read_data_fits(opts *options, int *N) {
   fits_get_img_size(ff,naxis,lpixel,&status); FRE;
   if (naxis == 1) {
     image = malloc(lpixel[0] * sizeof(double));
+    if (image == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     fits_read_pix(ff,TDOUBLE,fpixel,lpixel[0],NULL,image,&naxis,&status); FRE;
     lpixel[1] = 1;
   }
   else if (naxis == 2) {
     fpixel[1] = options->order + 1;  /* This probably should be correctly handled by a DISP-AXIS header. */
     image = malloc(lpixel[0] * sizeof(double));
+    if (image == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     fits_read_pix(ff,TDOUBLE,fpixel,lpixel[0] ,NULL,image,&naxis,&status); FRE;
     if (options->max_order == 0) {
       options->max_order = lpixel[1] - 1;

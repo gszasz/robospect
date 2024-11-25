@@ -11,6 +11,10 @@ void log_comment(opts *options, int level, char *format, ...) {
 
   if (options->verbose & level) {
     comment = malloc(sizeof(char) * LOG_COMMENT_LENGTH);
+    if (comment == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     va_start(arg,format);
     status = vsnprintf(comment,LOG_COMMENT_LENGTH,format,arg);
     if (status > LOG_COMMENT_LENGTH) {

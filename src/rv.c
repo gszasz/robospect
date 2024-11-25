@@ -157,6 +157,10 @@ void measure_radial_velocity(opts *options, data *D, model *M) {
   rv_options->max_order = 0;
   rv_options->supplied_errors = 0;
   rv_options->path_base = malloc(32 * sizeof(char));
+  if (rv_options->path_base == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   rv_options->line_list_filename = NULL;
   rv_options->strict = 0;
   rv_options->fits_IO = 0;
@@ -166,15 +170,39 @@ void measure_radial_velocity(opts *options, data *D, model *M) {
   rv_options->command_line = NULL;
   
   rv_options->continuum_model_name = malloc(32 * sizeof(char));
+  if (rv_options->continuum_model_name == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   snprintf(rv_options->continuum_model_name,32 * sizeof(char),"%s",options->continuum_model_name);
   rv_options->line_model_name = malloc(32 * sizeof(char));
+  if (rv_options->line_model_name == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   snprintf(rv_options->line_model_name,32 * sizeof(char),"pre");
   rv_options->noise_model_name = malloc(32 * sizeof(char));
+  if (rv_options->noise_model_name == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   snprintf(rv_options->noise_model_name,32 * sizeof(char),"%s",options->noise_model_name);
   rv_options->deblend_model_name = malloc(32 * sizeof(char));
+  if (rv_options->deblend_model_name == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   rv_options->function_model_name = malloc(32 * sizeof(char));
+  if (rv_options->function_model_name == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
     
   rv_data  = malloc(sizeof(data));
+  if (rv_data == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   rv_data->N = D->N;
   rv_data->x = vector_copy(D->x , D->N);
   rv_data->y = vector_copy(D->y , D->N);

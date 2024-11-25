@@ -325,6 +325,10 @@ void measure_lines_PRE_second_version(data *D, model *M) {
     	    dwarf_lines = append_lines(dwarf_lines,D->x[max_x]);
     	    dwarf_lines->flags[dwarf_lines->l - 1] |= ROBO_FIT_BLEND;
 	    dwarf_lines->comment[dwarf_lines->l - 1] = malloc(sizeof(char) * 100);
+            if (dwarf_lines->comment[dwarf_lines->l - 1] == NULL) {
+              fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+              exit(EXIT_FAILURE);
+            }
 	    snprintf(dwarf_lines->comment[dwarf_lines->l - 1],100,
 		     "Dwarf line at %g adjacent to line at %g(%d)",
 		     D->x[max_x],M->L->mp[i],i);		    
@@ -403,6 +407,10 @@ void measure_lines_PRE_second_version(data *D, model *M) {
 	    
     	    dwarf_lines->flags[dwarf_lines->l - 1] |= ROBO_FIT_BLEND;
 	    dwarf_lines->comment[dwarf_lines->l - 1] = malloc(sizeof(char) * 100);
+            if (dwarf_lines->comment[dwarf_lines->l - 1] == NULL) {
+              fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+              exit(EXIT_FAILURE);
+            }
 	    snprintf(dwarf_lines->comment[dwarf_lines->l - 1],100,
 		     "Dwarf line at %g adjacent to line at %g(%d)",
 		     D->x[max_x],M->L->mp[i],i);		    

@@ -12,12 +12,32 @@
 model *alloc_models(opts *options, data *D) {
   int i;
   model *M = malloc(sizeof(model));
+  if (M == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   M->N = D->N;
   M->x = malloc(M->N * sizeof(double));
+  if (M->x == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   M->continuum = malloc(M->N * sizeof(double));
+  if (M->continuum == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   M->lines = malloc(M->N * sizeof(double));
+  if (M->lines == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   M->alternate = malloc(M->N * sizeof(double));
+  if (M->alternate == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   for (i = 0; i < D->N; i++) {
     M->x[i] = D->x[i];
@@ -26,22 +46,42 @@ model *alloc_models(opts *options, data *D) {
   }
   if (!options->continuum_model_name) {
     options->continuum_model_name = malloc(NAMESIZE * sizeof(char));
+    if (options->continuum_model_name == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(options->continuum_model_name,NAMESIZE,"default");
   }
   if (!options->line_model_name) {
     options->line_model_name = malloc(NAMESIZE * sizeof(char));
+    if (options->line_model_name == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(options->line_model_name,NAMESIZE,"default");
   }
   if (!options->noise_model_name) {
     options->noise_model_name = malloc(NAMESIZE * sizeof(char));
+    if (options->noise_model_name == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(options->noise_model_name,NAMESIZE,"default");
   }
   if (!options->deblend_model_name) {
     options->deblend_model_name = malloc(NAMESIZE * sizeof(char));
+    if (options->deblend_model_name == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(options->deblend_model_name,NAMESIZE,"default");
   }
   if (!options->function_model_name) {
     options->function_model_name = malloc(NAMESIZE * sizeof(char));
+    if (options->function_model_name == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(options->function_model_name,NAMESIZE,"default");
   }
 

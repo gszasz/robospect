@@ -55,6 +55,10 @@ lines *linefinder_naive(opts *options, data *D, model *M) {
 	L->eta[j] = 0.0;
 	L->manual[j] = 0;
 	L->comment[j] = malloc(sizeof(char) * AUTO_COMMENT_LENGTH);
+        if (L->comment[j] == NULL) {
+          fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+          exit(EXIT_FAILURE);
+        }
 	snprintf(L->comment[j],AUTO_COMMENT_LENGTH,AUTO_COMMENT_FORMAT,AUTO_COMMENT_VALUES);
 	L->flags[j] = ROBO_INIT;
 	L->blend_group[j] = 0;
@@ -140,6 +144,11 @@ lines *linefinder_with_prior(opts *options, data *D, model *M) {
 	  L->eta[j] = 0.0;
 	  L->manual[j] = 0;
 	  L->comment[j] = malloc(sizeof(char) * AUTO_COMMENT_LENGTH);
+          if (L->comment[j] == NULL) {
+            fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+            exit(EXIT_FAILURE);
+          }
+
 	  snprintf(L->comment[j],AUTO_COMMENT_LENGTH,AUTO_COMMENT_FORMAT,AUTO_COMMENT_VALUES);
 	  L->flags[j] = ROBO_INIT;
 	  L->blend_group[j] = 0;

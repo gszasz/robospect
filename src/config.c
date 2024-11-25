@@ -8,6 +8,10 @@
 /* Set up a default option structure. */
 opts *alloc_options() {
   opts *O = malloc(sizeof(opts));
+  if (O == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   O->psf_width = 5.0;                /* to remove */
   O->continuum_box = 40.0;
@@ -357,6 +361,10 @@ void usage_block(opts *O) {
 char * get_time() {
   time_t curtime = time(NULL);
   char *output = malloc(32 * sizeof(char));
+  if (output == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   strftime(output,32,DATE_FORMAT,localtime(&curtime));
   return(output);
 }
@@ -565,6 +573,10 @@ void set_options(opts *O, int argc, char *argv[]) {
   /* Load input file or read from stdin */
   if (argv[optind] == NULL) {
     O->infilename = malloc(32 * sizeof(char));
+    if (O->infilename == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     snprintf(O->infilename,32,"/dev/stdin");
   }
   else {

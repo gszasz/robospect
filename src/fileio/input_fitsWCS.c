@@ -10,6 +10,10 @@ typedef enum {
 
 fits_WCS *read_fits_WCS(fitsfile *ff) {
   fits_WCS *WCS = malloc(sizeof(fits_WCS));
+  if (WCS == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+  }
 
   int i;
   char value[80];
@@ -55,7 +59,15 @@ fits_WCS *read_fits_WCS(fitsfile *ff) {
   }
   WCS->N = atoi(value);
   WCS->x0 = malloc(WCS->N * sizeof(double));
+  if (WCS->x0 == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   WCS->xd = malloc(WCS->N * sizeof(double));
+  if (WCS->xd == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   fits_read_keyword(ff,"WAT1_001",value,NULL,&status); FRE;
   
@@ -89,6 +101,10 @@ fits_WCS *read_fits_WCS(fitsfile *ff) {
   else if (S == SPECT_MULTISPEC) {
     status = 0;
     fullspect = malloc(WCS->N * 2 * 80);
+    if (fullspect == NULL) {
+      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+      exit(EXIT_FAILURE);
+    }
     
     for (k = 1, pos = 0; k < WCS->N * 2; k++) {
       ret = snprintf(keyword, sizeof(keyword), "WAT2_%03d", k);

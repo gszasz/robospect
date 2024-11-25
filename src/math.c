@@ -62,6 +62,10 @@ int comp (const void *a, const void *b) {
 stats *array_stats_safe(double *x, int N) {
   int i;
   stats *S = malloc(sizeof(stats));
+  if (S == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
 
   S->N = N;
   S->mean = 0;
@@ -93,7 +97,15 @@ stats *array_stats_safe(double *x, int N) {
 stats *array_stats(double *x, int N) {
   int i;
   stats *S = malloc(sizeof(stats));
+  if (S == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double *MADarr = malloc(sizeof(double) * N);
+  if (MADarr == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   S->N = N;
   S->mean = 0;
   S->sigma = 0;
@@ -131,9 +143,25 @@ stats *histogram_and_gaussfit(double *x, int N) {
   int i,j;
   int M = (int) sqrt(N);
   stats *S = malloc(sizeof(stats));
+  if (S == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double *X = malloc(sizeof(double) * M);
+  if (X == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double *Y = malloc(sizeof(double) * M);
+  if (Y == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double *E = malloc(sizeof(double) * M);
+  if (E == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   double F,dm,ds,dA,chi;
   S->N = N;
   S->mean = 0;
@@ -210,6 +238,10 @@ double equivalent_width_error(lines *L, int i) {
 
 double *make_psf(double s, int N) {
   double *v = malloc(N * sizeof(double));
+  if (v == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int i;
 
   for (i = 0; i < N; i++) {
@@ -235,8 +267,16 @@ void robust_linear_fit (double *x, double *y, int N, double *m, double *b, doubl
 
   double S,Sx,Sy,Sxx,Syy,Sxy,D;
   int iterations = 0;
-  /*  double *e = malloc(sizeof(double) * N); */
+  /* double *e = malloc(sizeof(double) * N); */
+  /* if (e == NULL) { */
+  /*   fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
   double *w = malloc(sizeof(double) * N);
+  if (w == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   int i;
 
   for (i = 0; i < N; i++) {

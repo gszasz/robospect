@@ -76,9 +76,6 @@ void free_options (opts *O) {
     }
     O->log = stderr;
   }
-  if (O->command_name) {
-    free(O->command_name);
-  }
   if (O->command_line) {
     free(O->command_line);
   }
@@ -371,8 +368,8 @@ char * get_time() {
 
 void set_options(opts *O, int argc, char *argv[]) {
   char c = 0;
-  int i = 0;
-  int j = 0;
+  int i, pos;
+  int command_line_len;
   int opt_index;
 
   /* Rework this to use a better argument list for long options */
@@ -417,18 +414,23 @@ void set_options(opts *O, int argc, char *argv[]) {
     {0,0,0,0}
   };
   
+  /* Store command name into the option struct. */
+  O->command_name = argv[0];
+
   /* Store command line into the option struct. */
-  i = 0;
-  O->command_name = realloc(O->command_name,sizeof(char) * (i + strlen(argv[j]) + 2));
-  O->command_name = strcat(O->command_name,argv[j]);  
-  for (j = 0; j < argc; j++) {
-    O->command_line = realloc(O->command_line,sizeof(char) * (i + strlen(argv[j]) + 2));
-    i = i + strlen(argv[j]) + 2;
-    if (j > 0) {
-      O->command_line = strcat(O->command_line," ");
-    }
-    O->command_line = strcat(O->command_line,argv[j]);
+  command_line_len = 0;
+  for (i = 0 ; i < argc; i++) {
+    command_line_len += strlen(argv[i]) + 1;
   }
+  O->command_line = malloc(command_line_len + 1);
+  if (O->command_line == NULL) {
+    fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
+  for (i = 0, pos = 0; i < argc; i++) {
+    pos += sprintf(O->command_line + pos, "%s ", argv[i]);
+  }
+
   /* Parse options. */
   while ((c = getopt_long(argc,argv,"hFf:e:E:w:p:V:r:R:T:i:d:L:C:N:M:D:v:P:lz:x:y:1AI2:Q:3:45:6:7:8:",
 			  long_options,&opt_index)) != -1) {
@@ -572,12 +574,7 @@ void set_options(opts *O, int argc, char *argv[]) {
   
   /* Load input file or read from stdin */
   if (argv[optind] == NULL) {
-    O->infilename = malloc(32 * sizeof(char));
-    if (O->infilename == NULL) {
-      fprintf(stderr, "robospect: %s: %d: Cannot allocate memory\n", __FILE__, __LINE__);
-      exit(EXIT_FAILURE);
-    }
-    snprintf(O->infilename,32,"/dev/stdin");
+    O->infilename = "/dev/stdin";
   }
   else {
     O->infilename = argv[optind];
